@@ -36,25 +36,17 @@ export class UserController {
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateUserDTO,
+    @Body() data: UpdateUserDTO,
   ) {
-    return {
-      method: 'put',
-      body,
-      id,
-    };
+    return this.userService.update(id, data);
   }
 
   @Patch(':id')
   async updatePartial(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdatePatchUserDTO,
+    @Body() data: UpdatePatchUserDTO,
   ) {
-    return {
-      method: 'patch',
-      body,
-      id,
-    };
+    return this.userService.updatePartial(id, data);
   }
 
   @Delete(':id')

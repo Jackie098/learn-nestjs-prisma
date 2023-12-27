@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateUserDTO } from './dto/update-user-dto';
+import { UpdatePatchUserDTO } from './dto/update-patch-user-dto';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,34 @@ export class UserService {
 
   async findOne(id: number) {
     return this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  // Update (PUT) always must be change all fields
+  // Specific changes, must be made with PATCH
+  async update(id: number, data: UpdateUserDTO) {
+    return this.prisma.user.update({
+      data: { ...data, birthAt: data.birthAt ? new Date(data.birthAt) : null },
+      where: {
+        id,
+      },
+    });
+  }
+
+  async updatePartial(id: number, data: UpdatePatchUserDTO) {
+    // let birthAt = undefined;
+    // if (data.birthAt) {
+    //   birthAt = new Date(data.birthAt);
+    // }
+
+    return this.prisma.user.update({
+      data: {
+        ...data,
+        birthAt: data.birthAt ? new Date(data.birthAt) : undefined,
+      },
       where: {
         id,
       },
