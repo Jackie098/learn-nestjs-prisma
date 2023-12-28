@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDTO } from './dto/update-user-dto';
@@ -35,6 +35,8 @@ export class UserService {
   // Update (PUT) always must be change all fields
   // Specific changes, must be made with PATCH
   async update(id: number, data: UpdateUserDTO) {
+    await this.exists(id);
+
     return this.prisma.user.update({
       data: { ...data, birthAt: data.birthAt ? new Date(data.birthAt) : null },
       where: {
@@ -48,6 +50,7 @@ export class UserService {
     // if (data.birthAt) {
     //   birthAt = new Date(data.birthAt);
     // }
+    await this.exists(id);
 
     return this.prisma.user.update({
       data: {
@@ -58,5 +61,21 @@ export class UserService {
         id,
       },
     });
+  }
+
+  async delete(id: number) {
+    await this.exists(id);
+
+    return this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async exists(id: number) {
+    if (!(await this.findOne(id))) {
+      throw new NotFoundException(`The user ${id} does not exists.`);
+    }
   }
 }
