@@ -15,6 +15,7 @@ import { UpdateUserDTO } from './dto/update-user-dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user-dto';
 import { UserService } from './user.service';
 import { LogInterceptor } from 'src/interceptors/log.interceptor';
+import { ParamId } from 'src/decorators/param-id.decorator';
 @UseInterceptors(LogInterceptor)
 @Controller('users')
 export class UserController {
@@ -26,7 +27,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@ParamId() id: number) {
     return this.userService.findOne(id);
   }
 
@@ -36,10 +37,7 @@ export class UserController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserDTO,
-  ) {
+  async update(@ParamId() id: number, @Body() data: UpdateUserDTO) {
     return this.userService.update(id, data);
   }
 

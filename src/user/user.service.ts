@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ImATeapotException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDTO } from './dto/update-user-dto';
@@ -83,7 +87,7 @@ export class UserService {
         },
       }))
     ) {
-      throw new NotFoundException(`The user ${id} does not exists.`);
+      throw new ImATeapotException(`The user ${id} does not exists.`);
     }
   }
 }
