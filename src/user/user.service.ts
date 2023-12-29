@@ -1,12 +1,8 @@
-import {
-  ImATeapotException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateUserDTO } from './dto/create-user-dto';
+import { ImATeapotException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateUserDTO } from './dto/update-user-dto';
+import { CreateUserDTO } from './dto/create-user-dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user-dto';
+import { UpdateUserDTO } from './dto/update-user-dto';
 
 @Injectable()
 export class UserService {
