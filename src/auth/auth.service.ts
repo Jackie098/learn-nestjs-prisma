@@ -1,20 +1,39 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthRegisterDTO } from './dto/auth-register.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly JWTService: JwtService,
+    private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly userService: UserService,
   ) {}
 
-  async createToken() {
-    return;
+  async createToken(user: User) {
+    return {
+      accessToken: this.jwtService.sign(
+        {
+          // sub: user.id,
+          name: user.name,
+          email: user.email,
+        },
+        {
+          expiresIn: '7 days',
+          subject: String(user.id),
+          issuer: 'login',
+          audience: 'users',
+        },
+      ),
+    };
   }
 
   async checkToken(token: string) {
-    return;
+    // return this.jwtService.verifyAsync();
+    return token;
   }
 
   async login(email: string, password: string) {
@@ -29,7 +48,7 @@ export class AuthService {
       throw new UnauthorizedException(`E-mail e/ou senha incorretos.`);
     }
 
-    return user;
+    return this.createToken(user);
   }
 
   async forget(email: string) {
@@ -51,8 +70,9 @@ export class AuthService {
     // TODO: If token is valid
 
     const id = 10;
+    token;
 
-    await this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: {
         id,
       },
@@ -61,6 +81,12 @@ export class AuthService {
       },
     });
 
-    return true;
+    return this.createToken(user);
+  }
+
+  async register(data: AuthRegisterDTO) {
+    const user = await this.userService.create(data);
+
+    return this.createToken(user);
   }
 }
