@@ -16,6 +16,7 @@ import { UpdatePatchUserDTO } from './dto/update-patch-user-dto';
 import { UserService } from './user.service';
 import { LogInterceptor } from 'src/interceptors/log.interceptor';
 import { ParamId } from 'src/decorators/param-id.decorator';
+
 @UseInterceptors(LogInterceptor)
 @Controller('users')
 export class UserController {
