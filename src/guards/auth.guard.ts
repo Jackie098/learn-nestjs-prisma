@@ -23,6 +23,10 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (error) {
+      console.log(
+        '🚀 ~ file: auth.guard.ts:30 ~ AuthGuard ~ canActivate ~ error:',
+        error,
+      );
       return false;
     }
   }

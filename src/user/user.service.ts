@@ -3,19 +3,25 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDTO } from './dto/create-user-dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user-dto';
 import { UpdateUserDTO } from './dto/update-user-dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async create({ email, name, password }: CreateUserDTO) {
+    const encryptedPassword = await bcrypt.hash(
+      password,
+      await bcrypt.genSalt(),
+    );
+
     // prisma returns a promise, but in return statement
     // the "await" run by default
-    return await this.prisma.user.create({
+    return this.prisma.user.create({
       data: {
         email,
         name,
-        password,
+        password: encryptedPassword,
       },
     });
   }
@@ -39,8 +45,17 @@ export class UserService {
   async update(id: number, data: UpdateUserDTO) {
     await this.exists(id);
 
+    const encryptedPassword = await bcrypt.hash(
+      data.password,
+      await bcrypt.genSalt(),
+    );
+
     return this.prisma.user.update({
-      data: { ...data, birthAt: data.birthAt ? new Date(data.birthAt) : null },
+      data: {
+        ...data,
+        password: encryptedPassword,
+        birthAt: data.birthAt ? new Date(data.birthAt) : null,
+      },
       where: {
         id,
       },
@@ -52,11 +67,21 @@ export class UserService {
     // if (data.birthAt) {
     //   birthAt = new Date(data.birthAt);
     // }
+
     await this.exists(id);
+
+    let encryptedPassword: string = null;
+    if (data.password) {
+      encryptedPassword = await bcrypt.hash(
+        data.password,
+        await bcrypt.genSalt(),
+      );
+    }
 
     return this.prisma.user.update({
       data: {
         ...data,
+        password: encryptedPassword ? encryptedPassword : data.password,
         birthAt: data.birthAt ? new Date(data.birthAt) : undefined,
       },
       where: {
