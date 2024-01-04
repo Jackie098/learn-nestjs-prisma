@@ -24,7 +24,7 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(
         {
-          // sub: user.id,
+          id: user.id,
           name: user.name,
           email: user.email,
         },
@@ -65,6 +65,10 @@ export class AuthService {
         password,
       },
     });
+    console.log(
+      '🚀 ~ file: auth.service.ts:68 ~ AuthService ~ login ~ user:',
+      user,
+    );
 
     if (!user) {
       throw new UnauthorizedException(`E-mail e/ou senha incorretos.`);

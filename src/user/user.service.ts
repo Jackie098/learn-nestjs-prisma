@@ -83,6 +83,7 @@ export class UserService {
         },
       }))
     ) {
+      // TODO: Make a publication in LinkedIn about 418 error (teapot)
       throw new ImATeapotException(`The user ${id} does not exists.`);
     }
   }
