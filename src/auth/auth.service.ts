@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class AuthService {
   private issuer = 'login';

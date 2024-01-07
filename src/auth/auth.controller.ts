@@ -1,5 +1,16 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { join } from 'path';
 import { User } from 'src/decorators/user.decorator';
+import { FileService } from 'src/file/file.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
@@ -13,6 +24,7 @@ export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly fileService: FileService,
   ) {}
 
   @Post('login')
@@ -39,5 +51,29 @@ export class AuthController {
   @Post('me')
   async me(@User() user) {
     return { me: 'ok', user };
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(AuthGuard)
+  @Post('photo')
+  async uploadPhoto(@User() user, @UploadedFile() photo: Express.Multer.File) {
+    const path = join(
+      __dirname,
+      '..',
+      '..',
+      'storage',
+      'photos',
+      `photo-${photo.originalname.replace('.jpeg', '')}-${Math.random()
+        .toString()
+        .replace('.', '')}.png`,
+    );
+
+    try {
+      await this.fileService.upload(photo, path);
+    } catch (error) {
+      throw new BadRequestException('Error during saving file!');
+    }
+
+    return { success: true };
   }
 }
