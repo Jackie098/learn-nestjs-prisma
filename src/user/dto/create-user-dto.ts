@@ -17,11 +17,11 @@ export class CreateUserDTO {
 
   // Min for digit 1 is the default
   @IsStrongPassword({
-    minLength: 6,
-    minLowercase: 1,
-    minNumbers: 3,
-    minSymbols: 1,
-    minUppercase: 1,
+    minLength: 4,
+    minLowercase: 0,
+    minNumbers: 1,
+    minSymbols: 0,
+    minUppercase: 0,
   })
   password: string;
 
